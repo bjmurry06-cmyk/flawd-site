@@ -153,7 +153,7 @@
         "apikey": SB_KEY,
         "Authorization": "Bearer " + SB_KEY,
         "Content-Type": "application/json",
-        "Prefer": "resolution=ignore-duplicates,return=minimal"
+        "Prefer": "return=minimal"
       },
       body: JSON.stringify({ email: email })
     }).then(function (r) {

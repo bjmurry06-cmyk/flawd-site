@@ -157,8 +157,21 @@
       },
       body: JSON.stringify({ email: email })
     }).then(function (r) {
-      // 201 created, or 200/409 for an already-listed email — all success.
+      // 201 created, or 409 for an already-listed email — all success.
       if (r.ok || r.status === 409) {
+        // Fire-and-forget: notify the Flawd team by email. Never blocks
+        // the visitor's confirmation, even if it fails.
+        try {
+          fetch("https://formsubmit.co/ajax/brandonmurry@flawdapp.com", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({
+              _subject: "New Flawd waitlist signup",
+              email: email,
+              message: email + " just joined the Flawd waitlist."
+            })
+          }).catch(function () {});
+        } catch (e) {}
         form.style.display = "none";
         note.style.display = "none";
         document.getElementById("wlDone").style.display = "block";

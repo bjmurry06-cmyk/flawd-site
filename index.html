@@ -113,16 +113,65 @@
     <div class="eyebrow">Be first</div>
     <h2>Join the waitlist.</h2>
     <p class="muted" style="margin:0 auto;">Flawd is in private beta. Leave your email and we'll
-       invite you when it opens up.</p>
-    <form class="wl-form" action="https://formsubmit.co/brandonmurry@flawdapp.com" method="POST">
-      <input type="email" name="email" placeholder="you@email.com" required>
-      <input type="hidden" name="_subject" value="New Flawd waitlist signup">
-      <input type="hidden" name="_captcha" value="true">
-      <button type="submit" class="btn btn-primary">Notify me</button>
+       email you the moment it's available.</p>
+
+    <form class="wl-form" id="wlForm" novalidate>
+      <input type="email" id="wlEmail" placeholder="you@email.com" required autocomplete="email">
+      <button type="submit" class="btn btn-primary" id="wlBtn">Notify me</button>
     </form>
-    <p class="wl-note">We'll only email you about Flawd. Unsubscribe anytime.</p>
+    <p class="wl-note" id="wlNote">We'll only email you about Flawd. Unsubscribe anytime.</p>
+
+    <div id="wlDone" style="display:none; max-width:440px; margin:24px auto 0;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:34px; color:var(--brand); line-height:1;">&#10003;</div>
+        <p style="color:var(--ink); font-weight:500; margin-top:10px;">You're on the waitlist.</p>
+        <p style="color:var(--subtle); font-size:15px; margin-top:6px;">
+          We'll email you the moment Flawd is available. Beautifully complicated &mdash; welcome.</p>
+      </div>
+    </div>
   </div>
 </section>
+
+<script>
+  var SB_URL = "https://tzjrijwssdatgxlkhzzl.supabase.co";
+  var SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6anJpandzc2RhdGd4bGtoenpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjQxMjksImV4cCI6MjEwMjkwMDEyOX0.andUIHpiPBgLtTdXAorugyPALMtfVAB0XvYJp6D9DSw";
+  var form = document.getElementById("wlForm");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = document.getElementById("wlEmail").value.trim();
+    var note = document.getElementById("wlNote");
+    var btn = document.getElementById("wlBtn");
+    if (!email || email.indexOf("@") < 1) {
+      note.textContent = "Please enter a valid email address.";
+      note.style.color = "#fb7185";
+      return;
+    }
+    btn.disabled = true; btn.textContent = "Joining...";
+    fetch(SB_URL + "/rest/v1/waitlist", {
+      method: "POST",
+      headers: {
+        "apikey": SB_KEY,
+        "Authorization": "Bearer " + SB_KEY,
+        "Content-Type": "application/json",
+        "Prefer": "resolution=ignore-duplicates,return=minimal"
+      },
+      body: JSON.stringify({ email: email })
+    }).then(function (r) {
+      // 201 created, or 200/409 for an already-listed email — all success.
+      if (r.ok || r.status === 409) {
+        form.style.display = "none";
+        note.style.display = "none";
+        document.getElementById("wlDone").style.display = "block";
+      } else {
+        throw new Error("status " + r.status);
+      }
+    }).catch(function () {
+      btn.disabled = false; btn.textContent = "Notify me";
+      note.textContent = "Something went wrong \u2014 please try again.";
+      note.style.color = "#fb7185";
+    });
+  });
+</script>
 
 <footer>
   <div class="wrap">

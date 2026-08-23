@@ -56,6 +56,9 @@ nav .links a:hover { color:var(--ink); }
   background:var(--surface); border:1px solid var(--divider); border-radius:14px;
   padding:12px 20px; color:var(--ink); font-size:14px; opacity:0.55; cursor:default;
 }
+.appstore-badge { display:inline-block; line-height:0; transition:transform .15s ease; }
+.appstore-badge:hover { transform:translateY(-1px); }
+.appstore-badge img { display:block; height:52px; width:auto; }
 .soon { font-size:11px; color:var(--subtle); margin-top:8px; }
 
 /* Sections */

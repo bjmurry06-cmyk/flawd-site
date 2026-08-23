@@ -34,7 +34,12 @@
        you could love in someone else.</p>
     <a href="#waitlist" class="btn btn-primary">Join the waitlist</a>
     <div class="badges">
-      <span class="badge">Coming soon to the App Store</span>
+      <a id="appStoreLink" class="appstore-badge" href="#" style="display:none;"
+         aria-label="Download Flawd on the App Store">
+        <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83"
+             alt="Download on the App Store" height="52">
+      </a>
+      <span class="badge" id="appStoreSoon">Coming soon to the App Store</span>
       <div class="soon">Coming soon to iPhone — Android in the near future</div>
     </div>
   </div>
@@ -133,6 +138,23 @@
 </section>
 
 <script>
+  // ── App Store link ──────────────────────────────────────────────
+  // Once Flawd is approved, set APP_STORE_ID to the app's numeric Apple
+  // ID (App Store Connect → App Information → "Apple ID"). That's the
+  // ONLY change needed: the "Download on the App Store" badge then shows
+  // everywhere and links straight to the store; until then the site
+  // automatically shows "Coming soon".
+  var APP_STORE_ID = ""; // e.g. "6478912345"
+  (function () {
+    var link = document.getElementById("appStoreLink");
+    var soon = document.getElementById("appStoreSoon");
+    if (APP_STORE_ID) {
+      link.href = "https://apps.apple.com/app/id" + APP_STORE_ID;
+      link.style.display = "";
+      if (soon) soon.style.display = "none";
+    }
+  })();
+
   var SB_URL = "https://tzjrijwssdatgxlkhzzl.supabase.co";
   var SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6anJpandzc2RhdGd4bGtoenpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjQxMjksImV4cCI6MjEwMjkwMDEyOX0.andUIHpiPBgLtTdXAorugyPALMtfVAB0XvYJp6D9DSw";
   var form = document.getElementById("wlForm");

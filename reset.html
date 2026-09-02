@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flawd — Reset Password</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="legal">
+  <div class="wordmark">Flawd</div>
+  <h1>Reset your password</h1>
+  <p id="status">Verifying your reset link…</p>
+  <div id="form" style="display:none;margin-top:16px;">
+    <p>Choose a new password (at least 6 characters).</p>
+    <input id="pw" type="password" placeholder="New password" autocomplete="new-password"
+      style="width:100%;padding:12px;font-size:16px;box-sizing:border-box;margin-bottom:10px;">
+    <input id="pw2" type="password" placeholder="Confirm new password" autocomplete="new-password"
+      style="width:100%;padding:12px;font-size:16px;box-sizing:border-box;margin-bottom:12px;">
+    <button id="save" style="width:100%;padding:14px;font-size:16px;cursor:pointer;">Set new password</button>
+  </div>
+  <footer>Flawd™ is a trademark of Flawd Inc.<br>© 2026 Flawd Inc. · <a href="index.html">Home</a></footer>
+</main>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb = createClient('https://tzjrijwssdatgxlkhzzl.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6anJpandzc2RhdGd4bGtoenpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjQxMjksImV4cCI6MjEwMjkwMDEyOX0.andUIHpiPBgLtTdXAorugyPALMtfVAB0XvYJp6D9DSw');
+const statusEl = document.getElementById('status');
+const formEl = document.getElementById('form');
+
+// The recovery link drops a session in the URL; wait for Supabase to parse it.
+sb.auth.onAuthStateChange((event, session) => {
+  if (session) {
+    statusEl.textContent = 'Link verified. Enter your new password below.';
+    formEl.style.display = 'block';
+  }
+});
+
+// Fallback if no session appears (expired or already-used link).
+setTimeout(async () => {
+  const { data } = await sb.auth.getSession();
+  if (!data.session) {
+    statusEl.textContent = 'This reset link is invalid or has expired. Request a new one from the app.';
+  }
+}, 2500);
+
+document.getElementById('save').addEventListener('click', async () => {
+  const pw = document.getElementById('pw').value;
+  const pw2 = document.getElementById('pw2').value;
+  if (pw.length < 6) { statusEl.textContent = 'Password must be at least 6 characters.'; return; }
+  if (pw !== pw2) { statusEl.textContent = 'Passwords do not match.'; return; }
+  const { error } = await sb.auth.updateUser({ password: pw });
+  if (error) { statusEl.textContent = 'Error: ' + error.message; return; }
+  formEl.style.display = 'none';
+  statusEl.textContent = 'Your password has been reset. Open the Flawd app and log in with your new password.';
+});
+</script>
+</body>
+</html>
